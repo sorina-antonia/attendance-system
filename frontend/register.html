@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+    <link rel="stylesheet" href="styles.css">
+
+    <script>
+        // If already logged in, go to dashboard
+        if (localStorage.getItem("user")) {
+            window.location.href = "dashboard.html";
+        }
+    </script>
+
+    <style>
+        .register-container {
+            width: 350px;
+            margin: 80px auto;
+            padding: 25px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .register-container input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        .register-container button {
+            width: 100%;
+            padding: 12px;
+            background: #1a3d7c;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .register-container button:hover {
+            background: #163366;
+        }
+
+        .link-btn {
+            margin-top: 10px;
+            display: block;
+            font-size: 14px;
+            color: #1a3d7c;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <h1>Attendance System</h1>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="students.html">Students</a>
+            <a href="courses.html">Courses</a>
+            <a href="attendance.html">Attendance</a>
+            <a href="dashboard.html">Dashboard</a>
+        </div>
+    </div>
+
+    <!-- REGISTER CARD -->
+    <div class="register-container">
+        <h2>Create Account</h2>
+
+        <input id="username" placeholder="Full Name">
+        <input id="email" placeholder="Email Address">
+        <input id="password" type="password" placeholder="Password">
+
+        <button onclick="registerUser()">Register</button>
+
+        <a class="link-btn" href="login.html">Already have an account? Login</a>
+    </div>
+
+    <script>
+        function registerUser() {
+const data = {
+    username: document.getElementById("username").value,
+    email: document.getElementById("email").value,
+    password: document.getElementById("password").value
+};
+
+            fetch("http://100.29.10.131:5000/register", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(result => {
+                alert(result.message);
+                if (result.message.includes("success")) {
+                    window.location.href = "login.html";
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>

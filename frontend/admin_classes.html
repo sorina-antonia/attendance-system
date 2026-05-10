@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Manage Classes</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body onload="loadClasses()">
+
+    <div class="navbar">
+        <h1>Admin Panel</h1>
+        <div class="nav-links">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="admin_classes.html">Classes</a>
+        </div>
+        <button onclick="logout()">Logout</button>
+    </div>
+
+    <div class="container">
+
+        <h2>Manage Classes</h2>
+
+        <!-- ADD CLASS FORM -->
+        <div class="card">
+            <h3>Add New Class</h3>
+
+            <input id="class-name" type="text" placeholder="Class Name">
+
+            <button onclick="addClass()">Add Class</button>
+        </div>
+
+        <!-- CLASSES TABLE -->
+        <div class="card">
+            <h3>All Classes</h3>
+
+            <table id="classes-table">
+                <tr>
+                    <th>ID</th>
+                    <th>Class Name</th>
+                    <th>Actions</th>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+
+<script>
+function loadClasses() {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user || user.role !== "admin") {
+        window.location.href = "unauthorized.html";
+        return;
+    }
+
+    fetch("http://100.29.10.131:5000/classes", {
+        method: "GET"
+    })
+    .then(res => res.json())
+    .then(data => {
+        const table = document.getElementById("classes-table");
+
+        data.forEach(cls => {
+            const tr = document.createElement("tr");
+
+            tr.innerHTML = `
+                <td>${cls.id}</td>
+                <td>${cls.name}</td>
+                <td>
+                    <button onclick="deleteClass(${cls.id})">Delete</button>
+                </td>
+            `;
+
+            table.appendChild(tr);
+        });
+    });
+}
+
+function addClass() {
+    const name = document.getElementById("class-name").value;
+
+    fetch("http://100.29.10.131:5000/classes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name })
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message);
+        location.reload();
+    });
+}
+
+function deleteClass(id) {
+    fetch(`http://100.29.10.131:5000/classes/${id}`, {
+        method: "DELETE"
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message);
+        location.reload();
+    });
+}
+
+function logout() {
+    localStorage.removeItem("user");
+    window.location.href = "login.html";
+}
+</script>
+
+</body>
+</html>

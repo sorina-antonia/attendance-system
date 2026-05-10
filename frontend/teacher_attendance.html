@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Attendance</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body onload="loadTeacherAttendance()">
+
+    <div class="navbar">
+        <h1>Attendance System</h1>
+        <div class="nav-links">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="teacher_attendance.html">Class Attendance</a>
+        </div>
+        <button onclick="logout()">Logout</button>
+    </div>
+
+    <div class="container">
+        <h2 id="welcome"></h2>
+
+        <div class="card">
+            <h3>Your Class Attendance</h3>
+            <table id="attendance-table">
+                <tr>
+                    <th>Student</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+<script>
+function loadTeacherAttendance() {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user || user.role !== "teacher") {
+        window.location.href = "unauthorized.html";
+        return;
+    }
+
+    document.getElementById("welcome").innerText =
+        `Welcome ${user.name} — Class ${user.class_id}`;
+
+    fetch("http://YOUR_PUBLIC_IP:5000/attendance/class", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user })
+    })
+    .then(res => res.json())
+    .then(data => {
+        const table = document.getElementById("attendance-table");
+
+        data.forEach(row => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${row.student_name}</td>
+                <td>${row.date}</td>
+                <td>${row.time}</td>
+                <td>${row.status}</td>
+                <td>
+                    <button onclick="updateStatus(${row.id}, 'Present')">Present</button>
+                    <button onclick="updateStatus(${row.id}, 'Absent')">Absent</button>
+                </td>
+            `;
+            table.appendChild(tr);
+        });
+    });
+}
+
+function updateStatus(attendanceId, status) {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    fetch("http://100.29.10.131:5000/attendance/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user, attendance_id: attendanceId, status })
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message);
+        location.reload();
+    });
+}
+
+function logout() {
+    localStorage.removeItem("user");
+    window.location.href = "login.html";
+}
+</script>
+
+</body>
+</html>

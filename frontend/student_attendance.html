@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Attendance</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body onload="loadStudentAttendance()">
+
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <h1>Attendance System</h1>
+        <div class="nav-links">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="student_attendance.html">My Attendance</a>
+        </div>
+        <button onclick="logout()">Logout</button>
+    </div>
+
+    <div class="container">
+
+        <!-- Welcome message -->
+        <h2 id="welcome"></h2>
+
+        <!-- MARK PRESENT BUTTON -->
+        <div class="card">
+            <h3>Mark Your Attendance</h3>
+            <button onclick="markPresent()">Mark Present</button>
+        </div>
+
+        <!-- ATTENDANCE HISTORY -->
+        <div class="card">
+            <h3>Your Attendance History</h3>
+            <table id="attendance-table">
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+
+<script>
+function loadStudentAttendance() {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    // Protect page
+    if (!user || user.role !== "student") {
+        window.location.href = "unauthorized.html";
+        return;
+    }
+
+    // Welcome message
+    document.getElementById("welcome").innerText =
+        `Welcome ${user.name} — Class ${user.class_id}`;
+
+    // Load attendance history
+    fetch("http://100.29.10.131:5000/attendance/student", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user })
+    })
+    .then(res => res.json())
+    .then(data => {
+        let table = document.getElementById("attendance-table");
+
+        data.forEach(row => {
+            let tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${row.date}</td>
+                <td>${row.time}</td>
+                <td>${row.status}</td>
+            `;
+            table.appendChild(tr);
+        });
+    });
+}
+
+function markPresent() {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    fetch("http://100.29.10.131:5000/attendance/mark", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user })
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message);
+        location.reload();
+    });
+}
+
+function logout() {
+    localStorage.removeItem("user");
+    window.location.href = "login.html";
+}
+</script>
+
+</body>
+</html>

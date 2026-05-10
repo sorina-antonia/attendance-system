@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Students</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body onload="protectPage()">
+
+<div class="navbar">
+    <h1>Attendance System</h1>
+    <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="students.html">Students</a>
+        <a href="courses.html">Courses</a>
+        <a href="attendance.html">Attendance</a>
+        <a href="dashboard.html">Dashboard</a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="card">
+        <h2>Your Attendance</h2>
+        <p>This page is only for students.</p>
+    </div>
+</div>
+
+<script>
+function protectPage() {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    if (user.role !== "student") {
+        window.location.href = "unauthorized.html";
+    }
+}
+</script>
+
+</body>
+</html>

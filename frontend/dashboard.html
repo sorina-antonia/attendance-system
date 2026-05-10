@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body onload="loadDashboard()">
+
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <h1>Attendance System</h1>
+
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="students.html">Students</a>
+            <a href="courses.html">Courses</a>
+            <a href="attendance.html">Attendance</a>
+            <a href="dashboard.html">Dashboard</a>
+        </div>
+
+        <button onclick="logout()">Logout</button>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="container">
+
+        <h2 id="welcome-text"></h2>
+
+        <!-- STAT CARDS (visible to ALL roles) -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Students</h3>
+                <p>120</p>
+            </div>
+
+            <div class="stat-card">
+                <h3>Total Courses</h3>
+                <p>8</p>
+            </div>
+
+            <div class="stat-card">
+                <h3>Today’s Attendance</h3>
+                <p>87%</p>
+            </div>
+
+            <div class="stat-card">
+                <h3>Pending Tasks</h3>
+                <p>3</p>
+            </div>
+        </div>
+
+        <!-- STUDENT SECTION -->
+        <div id="student-section" class="card" style="display:none;">
+            <h2>Your Attendance</h2>
+            <p>Here are your attendance records.</p>
+            <button onclick="window.location.href='student_attendance.html'">
+             Go to My Attendance
+             </button>
+        </div>
+
+        <!-- TEACHER SECTION -->
+<div id="teacher-section" class="card" style="display:none;">
+    <h2>Teacher Panel</h2>
+    <p>Manage attendance for your class.</p>
+
+    <button onclick="window.location.href='teacher_attendance.html'">
+        Go to Class Attendance
+    </button>
+</div>
+
+<!-- ADMIN SECTION -->
+<div id="admin-section" class="card" style="display:none;">
+    <h2>Admin Panel</h2>
+    <p>Manage the entire system.</p>
+
+    <button onclick="window.location.href='admin_students.html'">
+        Manage Students
+    </button>
+
+    <button onclick="window.location.href='admin_teachers.html'">
+        Manage Teachers
+    </button>
+
+    <button onclick="window.location.href='admin_classes.html'">
+        Manage Classes
+    </button>
+
+    <button onclick="window.location.href='admin_attendance.html'">
+        View All Attendance
+    </button>
+</div>
+
+    </div>
+
+    <script>
+        function loadDashboard() {
+            const user = JSON.parse(localStorage.getItem("user"));
+
+            // If not logged in → redirect
+            if (!user) {
+                window.location.href = "login.html";
+                return;
+            }
+
+            // Show welcome message
+            document.getElementById("welcome-text").innerText =
+                `Welcome, ${user.name} (${user.role.toUpperCase()})`;
+
+            // Hide all sections first
+            document.getElementById("student-section").style.display = "none";
+            document.getElementById("teacher-section").style.display = "none";
+            document.getElementById("admin-section").style.display = "none";
+
+            // Show section based on role
+            if (user.role === "student") {
+                document.getElementById("student-section").style.display = "block";
+            }
+
+            if (user.role === "teacher") {
+                document.getElementById("teacher-section").style.display = "block";
+            }
+
+            if (user.role === "admin") {
+                document.getElementById("admin-section").style.display = "block";
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem("user");
+            window.location.href = "login.html";
+        }
+    </script>
+
+</body>
+</html>

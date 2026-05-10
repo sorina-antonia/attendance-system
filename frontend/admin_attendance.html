@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - All Attendance</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body onload="loadAdminAttendance()">
+
+    <div class="navbar">
+        <h1>Admin Panel</h1>
+        <div class="nav-links">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="admin_attendance.html">All Attendance</a>
+        </div>
+        <button onclick="logout()">Logout</button>
+    </div>
+
+    <div class="container">
+        <h2>All Attendance Records</h2>
+
+        <div class="card">
+            <table id="attendance-table">
+                <tr>
+                    <th>Student</th>
+                    <th>Class</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+<script>
+function loadAdminAttendance() {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user || user.role !== "admin") {
+        window.location.href = "unauthorized.html";
+        return;
+    }
+
+    fetch("http://100.29.10.131:5000/attendance", {
+        method: "GET"
+    })
+    .then(res => res.json())
+    .then(data => {
+        const table = document.getElementById("attendance-table");
+
+        data.forEach(row => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${row.student_name}</td>
+                <td>${row.class_name}</td>
+                <td>${row.date}</td>
+                <td>${row.time}</td>
+                <td>${row.status}</td>
+            `;
+            table.appendChild(tr);
+        });
+    });
+}
+
+function logout() {
+    localStorage.removeItem("user");
+    window.location.href = "login.html";
+}
+</script>
+
+</body>
+</html>

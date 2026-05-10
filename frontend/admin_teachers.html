@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Manage Teachers</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body onload="loadTeachers()">
+
+    <div class="navbar">
+        <h1>Admin Panel</h1>
+        <div class="nav-links">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="admin_teachers.html">Teachers</a>
+        </div>
+        <button onclick="logout()">Logout</button>
+    </div>
+
+    <div class="container">
+
+        <h2>Manage Teachers</h2>
+
+        <!-- ADD TEACHER FORM -->
+        <div class="card">
+            <h3>Add New Teacher</h3>
+
+            <input id="teacher-name" type="text" placeholder="Teacher Name">
+            <input id="teacher-email" type="email" placeholder="Teacher Email">
+            <input id="teacher-class" type="number" placeholder="Class ID">
+
+            <button onclick="addTeacher()">Add Teacher</button>
+        </div>
+
+        <!-- TEACHERS TABLE -->
+        <div class="card">
+            <h3>All Teachers</h3>
+
+            <table id="teachers-table">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Class</th>
+                    <th>Actions</th>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+
+<script>
+function loadTeachers() {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user || user.role !== "admin") {
+        window.location.href = "unauthorized.html";
+        return;
+    }
+
+    fetch("http://100.29.10.131:5000/teachers", {
+        method: "GET"
+    })
+    .then(res => res.json())
+    .then(data => {
+        const table = document.getElementById("teachers-table");
+
+        data.forEach(teacher => {
+            const tr = document.createElement("tr");
+
+            tr.innerHTML = `
+                <td>${teacher.id}</td>
+                <td>${teacher.name}</td>
+                <td>${teacher.email}</td>
+                <td>${teacher.class_id}</td>
+                <td>
+                    <button onclick="deleteTeacher(${teacher.id})">Delete</button>
+                </td>
+            `;
+
+            table.appendChild(tr);
+        });
+    });
+}
+
+function addTeacher() {
+    const name = document.getElementById("teacher-name").value;
+    const email = document.getElementById("teacher-email").value;
+    const class_id = document.getElementById("teacher-class").value;
+
+    fetch("http://100.29.10.131:5000/teachers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            name,
+            email,
+            class_id
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message);
+        location.reload();
+    });
+}
+
+function deleteTeacher(id) {
+    fetch(`http://100.29.10.131:5000/teachers/${id}`, {
+        method: "DELETE"
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message);
+        location.reload();
+    });
+}
+
+function logout() {
+    localStorage.removeItem("user");
+    window.location.href = "login.html";
+}
+</script>
+
+</body>
+</html>
