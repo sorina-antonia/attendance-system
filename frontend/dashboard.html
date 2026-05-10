@@ -29,7 +29,7 @@
 
         <h2 id="welcome-text"></h2>
 
-        <!-- STAT CARDS (visible to ALL roles) -->
+        <!-- STAT CARDS -->
         <div class="stats-grid">
             <div class="stat-card">
                 <h3>Total Students</h3>
@@ -99,22 +99,19 @@
         function loadDashboard() {
             const user = JSON.parse(localStorage.getItem("user"));
 
-            // If not logged in → redirect
+        
             if (!user) {
                 window.location.href = "login.html";
                 return;
             }
 
-            // Show welcome message
             document.getElementById("welcome-text").innerText =
                 `Welcome, ${user.name} (${user.role.toUpperCase()})`;
-
-            // Hide all sections first
+            
             document.getElementById("student-section").style.display = "none";
             document.getElementById("teacher-section").style.display = "none";
             document.getElementById("admin-section").style.display = "none";
 
-            // Show section based on role
             if (user.role === "student") {
                 document.getElementById("student-section").style.display = "block";
             }
